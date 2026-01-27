@@ -402,7 +402,7 @@ class Step1Viewer(QDialog):
         self.spatial_plot.addItem(scatter)
         
         # Plot sample quads (first 100)
-        n_sample = min(100, len(quads))
+        n_sample = min(10000, len(quads))
         for i in range(n_sample):
             quad = quads[i]
             if len(quad) == 4:

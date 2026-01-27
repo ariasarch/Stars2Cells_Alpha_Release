@@ -802,6 +802,9 @@ class Stars2CellsViewer(QMainWindow):
             self._update_aggregate_stats()
             return
         
+        print(f"\n[DISPLAY] Showing session: {self.current_session}")
+        print(f"[DISPLAY] Tracking toggle checked: {self.show_tracking_action.isChecked()}")
+        
         data = self.sessions[self.current_session]
         x, y = data['centroids_x'], data['centroids_y']
         
@@ -811,14 +814,18 @@ class Stars2CellsViewer(QMainWindow):
             tracking_map = self._load_step3_tracking_for_session(self.current_session)
             if tracking_map:
                 self._apply_tracking_colors(self.current_session, tracking_map)
-                print(f"✓ Applied tracking colors: {len(tracking_map)} tracked, "
-                    f"{len(self.point_colors[self.current_session]) - len(tracking_map)} untracked")
+                print(f"[DISPLAY] ✓ Applied tracking colors: {len(tracking_map)} tracked")
+            else:
+                print(f"[DISPLAY] ✗ No tracking data found")
         
         colors = self.point_colors[self.current_session]
         deleted = self.deleted_indices.get(self.current_session, set())
         
+        print(f"[DISPLAY] Clearing plot...")  
         self.plot_widget.clear()
         valid_indices = [i for i in range(len(x)) if i not in deleted]
+        
+        print(f"[DISPLAY] Valid indices: {len(valid_indices)}")  
         
         if len(valid_indices) == 0:
             self._update_aggregate_stats()
@@ -827,6 +834,8 @@ class Stars2CellsViewer(QMainWindow):
         pos_array = np.column_stack([x, y])
         self.plot_widget.point_positions = pos_array
         self.plot_widget.deleted_indices = deleted
+        
+        print(f"[DISPLAY] Plotting {len(valid_indices)} points...") 
         
         for i in valid_indices:
             xi, yi = x[i], y[i]
@@ -846,10 +855,14 @@ class Stars2CellsViewer(QMainWindow):
             scatter.setData([xi], [yi], data=[i])
             self.plot_widget.addItem(scatter)
         
+        print(f"[DISPLAY] Plot updated!") 
+        
         self._update_plot_title(data, len(x), len(deleted))
         
         # PASS TRACKING MAP TO STATS
         self._update_aggregate_stats(tracking_map)
+        
+        print(f"[DISPLAY] Display complete!\n") 
 
     def _update_plot_title(self, data, total_rois, n_deleted):
         """Update plot title only"""

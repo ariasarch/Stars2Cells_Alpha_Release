@@ -130,7 +130,7 @@ def _handle_temp_accumulators(animal_dict: dict, extracted: dict, stats_config: 
         'filtering_ratios': 'filtering_ratio',
         'translations': 'translation_magnitude',
         'rotations': 'rotation_deg',
-        'match_rates': 'match_rate',
+        'match_rates': 'optimal_rate',
     }
     
     for temp_field in temp_accumulators:

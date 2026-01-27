@@ -163,14 +163,22 @@ def process_session_pair_sweep(
     print(f"[SWEEP] Running Hungarian algorithm (once)...")
     row_ind, col_ind = linear_sum_assignment(cost_matrix)
     all_costs = cost_matrix[row_ind, col_ind]
-    
+
+    # Auto-scale input range [0, 100] to actual cost range [0, max_cost]
+    actual_max_cost = np.max(cost_matrix[cost_matrix < 1e6])
+    scale_factor = actual_max_cost / 100.0
+    hungarian_cost_values_scaled = hungarian_cost_values * scale_factor
+
+    print(f"[SWEEP] Auto-scaled costs: input [0-100] → actual [0-{actual_max_cost:.0f}]")
+    print(f"[SWEEP] Testing thresholds from {hungarian_cost_values_scaled[0]:.1f} to {hungarian_cost_values_scaled[-1]:.1f}")
+
     # Store results for each threshold
     match_counts = []
     match_rates = []
-    
-    print(f"\n[SWEEP] Testing {len(hungarian_cost_values)} thresholds...")
-    for cost_threshold in hungarian_cost_values:
-        valid = all_costs < cost_threshold
+
+    print(f"\n[SWEEP] Testing {len(hungarian_cost_values_scaled)} thresholds...")
+    for cost_threshold in hungarian_cost_values_scaled:
+        valid = all_costs <= cost_threshold  # ← Changed from < to <=
         n_matches = np.sum(valid)
         match_rate = n_matches / n_ref if n_ref > 0 else 0.0
         
@@ -179,19 +187,20 @@ def process_session_pair_sweep(
     
     match_counts = np.array(match_counts, dtype=np.int32)
     match_rates = np.array(match_rates, dtype=np.float32)
-    
+        
     # Find optimal threshold (max matches)
     optimal_idx = np.argmax(match_counts)
-    optimal_threshold = hungarian_cost_values[optimal_idx]
+    optimal_threshold = hungarian_cost_values[optimal_idx]  # Keep for reporting
+    optimal_threshold_scaled = hungarian_cost_values_scaled[optimal_idx]  # ← Use this for extraction
     optimal_matches = match_counts[optimal_idx]
     optimal_rate = match_rates[optimal_idx]
-    
+
     print(f"\n[SWEEP] ===== Sweep Results =====")
     print(f"[SWEEP] Optimal threshold: {optimal_threshold:.2f}")
     print(f"[SWEEP] → {optimal_matches} matches ({optimal_rate*100:.1f}%)")
-    
+
     # Get actual matches at optimal threshold
-    valid_mask = all_costs < optimal_threshold
+    valid_mask = all_costs <= optimal_threshold_scaled  # ← Use SCALED threshold!
     matched_ref_indices = row_ind[valid_mask]
     matched_tgt_indices = col_ind[valid_mask]
     matched_costs = all_costs[valid_mask]
@@ -607,7 +616,7 @@ def run_step_3_final_matching(
     input_dir: str,
     output_dir: str,
     hungarian_cost_min: float = 0.0,
-    hungarian_cost_max: float = 20.0,
+    hungarian_cost_max: float = 2319.0,
     hungarian_cost_steps: int = 20,
     use_quad_voting: bool = True,
     processes: Optional[int] = None,
@@ -748,6 +757,16 @@ def run_step_3_final_matching(
     print(f"{'#'*100}\n")
     
     logger.info(f"Step 3 complete: {len(results)} animals")
+    
+    if results:
+        print(f"\n{'='*80}")
+        print(f"SUMMARY - Match Rates by Animal:")
+        print(f"{'='*80}")
+        for r in results:
+            if r.get('n_pairs', 0) > 0:
+                match_rate = r.get('avg_optimal_rate', 0) * 100
+                print(f"  {r['animal_id']}: {match_rate:.1f}% average match rate ({r['n_pairs']} pairs)")
+        print(f"{'='*80}\n")
     
     return results
 

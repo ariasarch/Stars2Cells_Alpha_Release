@@ -27,7 +27,7 @@ PARAMETER_SCHEMAS = {
     'parallel_safety_margin': {'default': 0.1, 'type': float, 'min': 0.0, 'max': 1.0, 'widget': 'doublespinbox', 'decimals': 2, 'description': 'RAM safety margin'},
     'per_session_gb': {'default': 25.0, 'type': float, 'min': 1.0, 'max': 200.0, 'widget': 'doublespinbox', 'description': 'Estimated GB per session'},
     'triangle_chunk_size': {'default': 500_000, 'type': int, 'min': 1000, 'max': 10_000_000, 'widget': 'spinbox', 'description': 'Triangle chunk size'},
-    'max_triangles_per_diagonal': {'default': 25, 'type': int, 'min': 1, 'max': 1000, 'widget': 'spinbox', 'description': 'Max triangles per diagonal'},
+    'max_triangles_per_diagonal': {'default': 25, 'type': int, 'min': 1, 'max': 10000, 'widget': 'spinbox', 'description': 'Max triangles per diagonal'},
     'diagonal_drop_percentile': {'default': 0.0, 'type': float, 'min': 0.0, 'max': 100.0, 'widget': 'doublespinbox', 'description': 'Drop short diagonals (%)'},
     'quad_keep_fraction': {'default': 1.0, 'type': float, 'min': 0.0, 'max': 1.0, 'widget': 'doublespinbox', 'decimals': 2, 'description': 'Fraction of quads to keep'},
     'min_pairwise_distance': {'default': 0.0, 'type': float, 'min': 0.0, 'max': 100.0, 'widget': 'doublespinbox', 'description': 'Min distance between neurons'},
@@ -52,13 +52,13 @@ PARAMETER_SCHEMAS = {
     # ========== STEP 3: FINAL MATCHING ==========
     'target_match_rate': {'default': None, 'type': float, 'min': 0.0, 'max': 1.0, 'widget': 'doublespinbox', 'decimals': 2, 'nullable': True, 'description': 'Target match rate (None=auto)'},
     'use_quad_voting': {'default': True, 'type': bool, 'widget': 'checkbox', 'description': 'Use quad voting'},
-    'hungarian_max_cost': {'default': None, 'type': float, 'min': 0.0, 'max': 1000.0, 'widget': 'doublespinbox', 'nullable': True, 'description': 'Max Hungarian cost'},
+    'hungarian_max_cost': {'default': None, 'type': float, 'min': 0.0, 'max': 10000.0, 'widget': 'doublespinbox', 'nullable': True, 'description': 'Max Hungarian cost'},
     
     # ========== STEP 3 SWEEP: HUNGARIAN COST SWEEP ==========
     'run_sweep': {'default': False, 'type': bool, 'widget': 'checkbox', 'description': 'Run Hungarian cost sweep'},
-    'hungarian_cost_min': {'default': 0.0, 'type': float, 'min': 0.0, 'max': 1000.0, 'widget': 'doublespinbox', 'description': 'Min cost for sweep'},
-    'hungarian_cost_max': {'default': 20.0, 'type': float, 'min': 0.0, 'max': 1000.0, 'widget': 'doublespinbox', 'description': 'Max cost for sweep'},
-    'hungarian_cost_steps': {'default': 20, 'type': int, 'min': 2, 'max': 100, 'widget': 'spinbox', 'description': 'Number of cost steps'},
+    'hungarian_cost_min': {'default': 0.0, 'type': float, 'min': 0.0, 'max': 99.0, 'widget': 'doublespinbox', 'description': 'Min cost for sweep'},
+    'hungarian_cost_max': {'default': 100.0, 'type': float, 'min': 0.0, 'max': 100.0, 'widget': 'doublespinbox', 'description': 'Max cost for sweep'},
+    'hungarian_cost_steps': {'default': 20, 'type': int, 'min': 2, 'max': 1000, 'widget': 'spinbox', 'description': 'Number of cost steps'},
     
     # ========== IMAGE ==========
     'image_width': {'default': 640, 'type': int, 'min': 1, 'max': 10000, 'widget': 'spinbox', 'description': 'Image width (px)'},

@@ -477,7 +477,7 @@ class Step2Viewer(QDialog):
         self.spatial_plot.addItem(scatter2)
         
         # Draw match lines between quad centroids (sample)
-        n_sample = min(100, len(match_indices))
+        n_sample = min(10000, len(match_indices))
         for match in match_indices[:n_sample]:
             ref_quad = match[:4]
             tgt_quad = match[4:]
